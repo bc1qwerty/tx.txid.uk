@@ -5,11 +5,6 @@ header { background: var(--bg2); border-bottom: 1px solid var(--border); positio
 .logo-sep { color: var(--border); font-family: var(--font); font-size: .9rem; margin: 0 2px; }
 .logo-sub { font-family: var(--font); font-size: .8rem; color: var(--text3); }
 .nav-links { display: flex; align-items: center; gap: 4px; }
-.nav-links a { color: var(--text2); font-size: .8rem; padding: 6px 12px; border-radius: 4px; transition: all .2s; text-decoration: none; font-family: var(--font-ko); position: relative; }
-.nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: var(--accent); border-radius: 1px; transition: width .2s; }
-.nav-links a:hover { color: var(--accent); background: rgba(247,147,26,.06); }
-.nav-links a.active { color: var(--accent); background: rgba(247,147,26,.08); }
-.nav-links a.active::after { width: 60%; }
 .nav-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .theme-btn { background: none; border: 1px solid var(--border); color: var(--text2); width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
 .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -25,7 +20,12 @@ header { background: var(--bg2); border-bottom: 1px solid var(--border); positio
 .tools-dropdown-menu a svg { flex-shrink: 0; }
 .tools-dropdown-menu .dd-name { display: block; color: inherit; }
 .tools-dropdown-menu .dd-sub { display: block; font-size: .65rem; color: var(--text3); }
-.content{max-width:860px;margin:0 auto;padding:0 20px 60px;}
+.nav-links a { color: var(--text2); font-size: .8rem; padding: 6px 12px; border-radius: 4px; transition: all .2s; text-decoration: none; font-family: var(--font-ko); position: relative; }
+.nav-links a::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 0; height: 2px; background: var(--accent); border-radius: 1px; transition: width .2s; }
+.nav-links a:hover { color: var(--accent); background: rgba(247,147,26,.06); }
+.nav-links a.active { color: var(--accent); background: rgba(247,147,26,.08); }
+.nav-links a.active::after { width: 60%; }
+.tools-dropdown:hover .content{max-width:860px;margin:0 auto;padding:0 20px 60px;}
 .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
 .tab{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--font-ko);font-size:.8rem;padding:8px 16px;border-radius:7px;cursor:pointer;transition:all .2s;}
 .tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
