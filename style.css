@@ -22,3 +22,16 @@
 .fee-val{font-family:var(--font);font-size:1.4rem;font-weight:700;color:var(--accent);}
 .fee-sub{font-size:.65rem;color:var(--text3);font-family:var(--font-ko);margin-top:4px;}
 .fee-time{font-size:.68rem;color:var(--text2);font-family:var(--font-ko);margin-top:2px;}
+
+.logo {
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity .2s;
+}
+.logo:hover { opacity: .8; }
