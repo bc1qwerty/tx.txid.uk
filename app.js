@@ -1,14 +1,15 @@
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 'use strict';
 const API='https://mempool.space/api';
 (function(){const t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'🌙':'☀️';})();
 function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);document.getElementById('theme-btn').textContent=n==='dark'?'🌙':'☀️';}
 
 let activeTab='broadcast';
-function switchTab(tab,panel){
+function switchTab(tab,panel,btn){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  event.target.classList.add('active');
+  (btn||event?.target)?.classList.add('active');
   document.getElementById(panel).style.display='block';
 }
 
@@ -64,7 +65,7 @@ function scriptToType(script){
 function decodeTx(standalone){
   const hex=(standalone?document.getElementById('decode-tx'):document.getElementById('raw-tx'))?.value.trim();
   const resultId=standalone?'decode-result':'decode-preview';
-  if(!hex||!/^[0-9a-fA-F]+$/.test(hex)){showResult(resultId,'<span class="result-err">유효한 hex를 입력하세요</span>');return;}
+  if(!hex||!/^[0-9a-fA-F]+$/.test(hex)||hex.length>2000000){showResult(resultId,'<span class="result-err">유효한 hex를 입력하세요 (최대 1MB)</span>');return;}
   const tx=parseTxHex(hex);
   if(!tx){showResult(resultId,'<span class="result-err">파싱 실패: 올바른 Raw TX hex가 아닙니다</span>');return;}
   const html=`
@@ -87,10 +88,14 @@ async function broadcastTx(){
   if(!confirm('이 트랜잭션을 비트코인 메인넷에 브로드캐스트하시겠습니까?\n한 번 전송하면 취소할 수 없습니다.'))return;
   showResult('broadcast-result','전송 중…');
   try{
-    const res=await fetch(`${API}/tx`,{method:'POST',body:hex,headers:{'Content-Type':'text/plain'}});
+    const res=await fetch(`${API}/tx`,{method:'POST',body:hex,headers:{'Content-Type':'text/plain'},signal:AbortSignal.timeout(15000)});
     const txid=await res.text();
-    if(res.ok){showResult('broadcast-result',`<div class="result-ok">✓ 브로드캐스트 성공!</div><div style="margin-top:8px;color:var(--text2)">TXID: <a href="https://txid.uk/#/tx/${txid}" style="color:var(--accent)">${txid}</a></div>`);}
-    else{showResult('broadcast-result',`<span class="result-err">❌ 오류: ${txid}</span>`);}
+    if(res.ok){
+      const isTxid=/^[0-9a-fA-F]{64}$/.test(txid.trim());
+      const txLink=isTxid?`<a href="https://txid.uk/#/tx/${txid.trim()}" style="color:var(--accent)" target="_blank">${txid.trim()}</a>`:escHtml(txid);
+      showResult('broadcast-result',`<div class="result-ok">✓ 브로드캐스트 성공!</div><div style="margin-top:8px;color:var(--text2)">TXID: ${txLink}</div>`);
+    }
+    else{showResult('broadcast-result',`<span class="result-err">❌ 오류: ${escHtml(txid.slice(0,200))}</span>`);}
   }catch(e){showResult('broadcast-result',`<span class="result-err">네트워크 오류: ${e.message}</span>`);}
 }
 
@@ -99,7 +104,7 @@ async function lookupTx(){
   if(!/^[0-9a-fA-F]{64}$/.test(txid)){showResult('lookup-result','<span class="result-err">유효한 TXID를 입력하세요 (64자 hex)</span>');return;}
   showResult('lookup-result','조회 중…');
   try{
-    const tx=await fetch(`${API}/tx/${txid}`).then(r=>r.json());
+    const tx=await fetch(`${API}/tx/${txid}`,{signal:AbortSignal.timeout(10000)}).then(r=>r.json());
     const totalIn=tx.vin.reduce((s,v)=>s+(v.prevout?.value||0),0);
     const totalOut=tx.vout.reduce((s,v)=>s+(v.value||0),0);
     const html=`
@@ -114,12 +119,12 @@ async function lookupTx(){
       </div>
       <div class="tx-section">
         <div class="tx-section-title">입력 ${tx.vin.length}개</div>
-        ${tx.vin.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${v.prevout?.scriptpubkey_address||v.coinbase?'Coinbase':'—'}</span><span class="io-val">${((v.prevout?.value||0)/1e8).toFixed(4)} BTC</span></div>`).join('')}
+        ${tx.vin.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${escHtml(v.prevout?.scriptpubkey_address||(v.coinbase?'Coinbase':'—'))}</span><span class="io-val">${((v.prevout?.value||0)/1e8).toFixed(4)} BTC</span></div>`).join('')}
         ${tx.vin.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vin.length-5}개 더</div>`:''}
       </div>
       <div class="tx-section">
         <div class="tx-section-title">출력 ${tx.vout.length}개</div>
-        ${tx.vout.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${v.scriptpubkey_address||'—'}</span><span class="io-val">${(v.value/1e8).toFixed(4)} BTC</span></div>`).join('')}
+        ${tx.vout.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${escHtml(v.scriptpubkey_address||'—')}</span><span class="io-val">${(v.value/1e8).toFixed(4)} BTC</span></div>`).join('')}
         ${tx.vout.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vout.length-5}개 더</div>`:''}
       </div>`;
     showResult('lookup-result',html);
@@ -128,7 +133,7 @@ async function lookupTx(){
 
 async function loadFees(){
   try{
-    const f=await fetch(`${API}/v1/fees/recommended`).then(r=>r.json());
+    const f=await fetch(`${API}/v1/fees/recommended`,{signal:AbortSignal.timeout(8000)}).then(r=>r.json());
     document.getElementById('fee-grid').innerHTML=`
       <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🚀 즉시 (~10분)</div></div>
       <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">⚡ ~30분</div></div>
@@ -136,7 +141,7 @@ async function loadFees(){
       <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">💤 경제 요금</div></div>
       <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🐌 최소</div></div>
     `;
-  }catch{}
+  }catch{document.getElementById('fee-grid').innerHTML='<div style="color:var(--text3);font-size:.8rem">수수료 데이터 로드 실패</div>';}
 }
 
 document.getElementById('txid-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')lookupTx();});
