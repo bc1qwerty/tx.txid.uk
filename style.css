@@ -1,0 +1,24 @@
+.content{max-width:860px;margin:0 auto;padding:0 20px 60px;}
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--font-ko);font-size:.8rem;padding:8px 16px;border-radius:7px;cursor:pointer;transition:all .2s;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+.panel-desc{color:var(--text2);font-size:.82rem;font-family:var(--font-ko);margin-bottom:14px;}
+.warning-box{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:7px;padding:10px 14px;color:#f85149;font-size:.78rem;font-family:var(--font-ko);margin-bottom:14px;}
+.textarea{resize:vertical;margin-bottom:12px;font-size:.75rem;}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.btn.danger{background:var(--red);color:#fff;}.btn.danger:hover{background:#c93a2e;}
+.result-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:var(--font);font-size:.75rem;line-height:1.8;word-break:break-all;}
+.result-ok{color:var(--green);}.result-err{color:var(--red);}
+.tx-section{margin-top:14px;}
+.tx-section-title{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-family:var(--font-ko);}
+.io-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.72rem;}
+.io-row:last-child{border-bottom:none;}
+.io-addr{color:var(--blue);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.io-val{color:var(--accent);flex-shrink:0;}
+.search-row{display:flex;gap:10px;margin-bottom:14px;}
+.search-row .input{flex:1;}
+.fee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.fee-card{background:var(--bg3);border-radius:7px;padding:14px;text-align:center;}
+.fee-val{font-family:var(--font);font-size:1.4rem;font-weight:700;color:var(--accent);}
+.fee-sub{font-size:.65rem;color:var(--text3);font-family:var(--font-ko);margin-top:4px;}
+.fee-time{font-size:.68rem;color:var(--text2);font-family:var(--font-ko);margin-top:2px;}

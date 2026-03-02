@@ -1,0 +1,143 @@
+'use strict';
+const API='https://mempool.space/api';
+(function(){const t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-btn').textContent=t==='dark'?'🌙':'☀️';})();
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);document.getElementById('theme-btn').textContent=n==='dark'?'🌙':'☀️';}
+
+let activeTab='broadcast';
+function switchTab(tab,panel){
+  activeTab=tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+  event.target.classList.add('active');
+  document.getElementById(panel).style.display='block';
+}
+
+function getHex(){return(document.getElementById('raw-tx')||{}).value?.trim()||'';}
+function clearTx(){document.getElementById('raw-tx').value='';['decode-preview','broadcast-result'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
+
+function showResult(id,html,show=true){const el=document.getElementById(id);if(!el)return;el.innerHTML=html;el.style.display=show?'block':'none';}
+
+function parseTxHex(hex){
+  // 간략한 raw tx 파서 (버전 / vin / vout 개수)
+  try{
+    let off=0;
+    const b=hex;
+    const read=(n)=>{const s=b.slice(off*2,off*2+n*2);off+=n;return s;};
+    const readLE=(n)=>parseInt(read(n).match(/../g).reverse().join(''),16);
+    const readVarInt=()=>{const f=parseInt(read(1),16);if(f<0xfd)return f;if(f===0xfd)return readLE(2);if(f===0xfe)return readLE(4);return readLE(8);};
+    const version=readLE(4);
+    // segwit marker check
+    let segwit=false;
+    const marker=parseInt(b.slice(off*2,off*2+2),16);
+    if(marker===0){off++;const flag=parseInt(read(1),16);if(flag===1)segwit=true;}
+    const inCount=readVarInt();
+    const ins=[];
+    for(let i=0;i<inCount;i++){
+      const prevHash=read(32).match(/../g).reverse().join('');
+      const prevIdx=readLE(4);
+      const scriptLen=readVarInt();const script=read(scriptLen);
+      const seq=readLE(4);
+      ins.push({prevHash,prevIdx,scriptLen,script,seq});
+    }
+    const outCount=readVarInt();
+    const outs=[];
+    for(let i=0;i<outCount;i++){
+      const valueSat=BigInt('0x'+read(8).match(/../g).reverse().join(''));
+      const scriptLen=readVarInt();const script=read(scriptLen);
+      outs.push({value:Number(valueSat),script});
+    }
+    const totalOut=outs.reduce((s,o)=>s+o.value,0);
+    return{version,segwit,inCount,outCount,ins,outs,totalOut,size:hex.length/2};
+  }catch(e){return null;}
+}
+
+function scriptToType(script){
+  if(script.startsWith('76a914')&&script.endsWith('88ac'))return'P2PKH';
+  if(script.startsWith('a914')&&script.endsWith('87'))return'P2SH';
+  if(script.startsWith('0014'))return'P2WPKH';
+  if(script.startsWith('0020'))return'P2WSH';
+  if(script.startsWith('5120'))return'P2TR';
+  if(script.startsWith('6a'))return'OP_RETURN';
+  return'Unknown';
+}
+
+function decodeTx(standalone){
+  const hex=(standalone?document.getElementById('decode-tx'):document.getElementById('raw-tx'))?.value.trim();
+  const resultId=standalone?'decode-result':'decode-preview';
+  if(!hex||!/^[0-9a-fA-F]+$/.test(hex)){showResult(resultId,'<span class="result-err">유효한 hex를 입력하세요</span>');return;}
+  const tx=parseTxHex(hex);
+  if(!tx){showResult(resultId,'<span class="result-err">파싱 실패: 올바른 Raw TX hex가 아닙니다</span>');return;}
+  const html=`
+    <div><span style="color:var(--text3)">버전:</span> <span style="color:var(--accent)">${tx.version}</span> · <span style="color:var(--text3)">크기:</span> ${tx.size} bytes · ${tx.segwit?'<span class="badge badge-blue">SegWit</span>':'Legacy'}</div>
+    <div class="tx-section">
+      <div class="tx-section-title">입력 (${tx.inCount}개)</div>
+      ${tx.ins.map((v,i)=>`<div class="io-row"><span class="io-addr">${v.prevHash.slice(0,20)}…:${v.prevIdx}</span><span style="color:var(--text3);font-size:.65rem">${scriptToType(v.script)}</span></div>`).join('')}
+    </div>
+    <div class="tx-section">
+      <div class="tx-section-title">출력 (${tx.outCount}개)</div>
+      ${tx.outs.map((o,i)=>`<div class="io-row"><span class="io-addr">${scriptToType(o.script)}</span><span class="io-val">${(o.value/1e8).toFixed(8)} BTC</span></div>`).join('')}
+    </div>
+    <div style="margin-top:10px;color:var(--accent)">총 출력: ${(tx.totalOut/1e8).toFixed(8)} BTC</div>`;
+  showResult(resultId,html);
+}
+
+async function broadcastTx(){
+  const hex=getHex();
+  if(!hex){showResult('broadcast-result','<span class="result-err">Raw TX hex를 입력하세요</span>');return;}
+  if(!confirm('이 트랜잭션을 비트코인 메인넷에 브로드캐스트하시겠습니까?\n한 번 전송하면 취소할 수 없습니다.'))return;
+  showResult('broadcast-result','전송 중…');
+  try{
+    const res=await fetch(`${API}/tx`,{method:'POST',body:hex,headers:{'Content-Type':'text/plain'}});
+    const txid=await res.text();
+    if(res.ok){showResult('broadcast-result',`<div class="result-ok">✓ 브로드캐스트 성공!</div><div style="margin-top:8px;color:var(--text2)">TXID: <a href="https://txid.uk/#/tx/${txid}" style="color:var(--accent)">${txid}</a></div>`);}
+    else{showResult('broadcast-result',`<span class="result-err">❌ 오류: ${txid}</span>`);}
+  }catch(e){showResult('broadcast-result',`<span class="result-err">네트워크 오류: ${e.message}</span>`);}
+}
+
+async function lookupTx(){
+  const txid=document.getElementById('txid-input').value.trim();
+  if(!/^[0-9a-fA-F]{64}$/.test(txid)){showResult('lookup-result','<span class="result-err">유효한 TXID를 입력하세요 (64자 hex)</span>');return;}
+  showResult('lookup-result','조회 중…');
+  try{
+    const tx=await fetch(`${API}/tx/${txid}`).then(r=>r.json());
+    const totalIn=tx.vin.reduce((s,v)=>s+(v.prevout?.value||0),0);
+    const totalOut=tx.vout.reduce((s,v)=>s+(v.value||0),0);
+    const html=`
+      <div><a href="https://txid.uk/#/tx/${txid}" style="color:var(--accent)">${txid.slice(0,20)}…</a>
+        ${tx.status?.confirmed?`<span class="badge badge-green" style="margin-left:8px">✓ 확인됨 #${tx.status.block_height}</span>`:`<span class="badge badge-orange" style="margin-left:8px">미확인</span>`}
+      </div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem">
+        <span><span style="color:var(--text3)">크기:</span> ${tx.size} B / ${tx.vsize} vB</span>
+        <span><span style="color:var(--text3)">수수료:</span> <span style="color:var(--accent)">${(tx.fee||0).toLocaleString()} sat</span></span>
+        <span><span style="color:var(--text3)">수수료율:</span> ${tx.vsize?(tx.fee/tx.vsize).toFixed(1):0} sat/vB</span>
+        <span><span style="color:var(--text3)">총 출력:</span> ${(totalOut/1e8).toFixed(4)} BTC</span>
+      </div>
+      <div class="tx-section">
+        <div class="tx-section-title">입력 ${tx.vin.length}개</div>
+        ${tx.vin.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${v.prevout?.scriptpubkey_address||v.coinbase?'Coinbase':'—'}</span><span class="io-val">${((v.prevout?.value||0)/1e8).toFixed(4)} BTC</span></div>`).join('')}
+        ${tx.vin.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vin.length-5}개 더</div>`:''}
+      </div>
+      <div class="tx-section">
+        <div class="tx-section-title">출력 ${tx.vout.length}개</div>
+        ${tx.vout.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${v.scriptpubkey_address||'—'}</span><span class="io-val">${(v.value/1e8).toFixed(4)} BTC</span></div>`).join('')}
+        ${tx.vout.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vout.length-5}개 더</div>`:''}
+      </div>`;
+    showResult('lookup-result',html);
+  }catch(e){showResult('lookup-result',`<span class="result-err">조회 실패: ${e.message}</span>`);}
+}
+
+async function loadFees(){
+  try{
+    const f=await fetch(`${API}/v1/fees/recommended`).then(r=>r.json());
+    document.getElementById('fee-grid').innerHTML=`
+      <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🚀 즉시 (~10분)</div></div>
+      <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">⚡ ~30분</div></div>
+      <div class="fee-card"><div class="fee-val">${f.hourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🕐 ~1시간</div></div>
+      <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">💤 경제 요금</div></div>
+      <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🐌 최소</div></div>
+    `;
+  }catch{}
+}
+
+document.getElementById('txid-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')lookupTx();});
+loadFees();
