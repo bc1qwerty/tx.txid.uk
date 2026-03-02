@@ -146,3 +146,17 @@ async function loadFees(){
 
 document.getElementById('txid-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')lookupTx();});
 loadFees();
+
+// URL 파라미터 자동 조회
+(function(){
+  const txid = new URLSearchParams(location.search).get('lookup');
+  if (!txid || !/^[0-9a-fA-F]{64}$/.test(txid)) return;
+  document.getElementById('txid-input').value = txid;
+  // lookup 탭으로 전환 후 조회
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab')[2]?.classList.add('active');
+  document.getElementById('lookup-panel').style.display = 'block';
+  lookupTx();
+  history.replaceState(null, '', location.pathname);
+})();
