@@ -25,7 +25,7 @@ header { background: var(--bg2); border-bottom: 1px solid var(--border); positio
 .nav-links a:hover { color: var(--accent); background: rgba(247,147,26,.06); }
 .nav-links a.active { color: var(--accent); background: rgba(247,147,26,.08); }
 .nav-links a.active::after { width: 60%; }
-.tools-dropdown:hover .content{max-width:860px;margin:0 auto;padding:0 20px 60px;}
+.content{max-width:860px;margin:0 auto;padding:0 24px 60px;}
 .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
 .tab{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--font-ko);font-size:.8rem;padding:8px 16px;border-radius:7px;cursor:pointer;transition:all .2s;}
 .tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
