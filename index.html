@@ -50,18 +50,18 @@
 
   <div class="content">
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('broadcast','broadcast-panel')">📤 브로드캐스트</button>
-      <button class="tab" onclick="switchTab('decode','decode-panel')">🔍 Raw TX 디코드</button>
+      <button class="tab active" onclick="switchTab('broadcast','broadcast-panel')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 브로드캐스트</button>
+      <button class="tab" onclick="switchTab('decode','decode-panel')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Raw TX 디코드</button>
       <button class="tab" onclick="switchTab('lookup','lookup-panel')">🔎 TX 조회</button>
     </div>
 
     <div id="broadcast-panel" class="panel">
       <div class="panel-desc">서명된 Raw 트랜잭션을 비트코인 메인넷에 브로드캐스트합니다.</div>
-      <div class="warning-box">⚠️ 브로드캐스트 후에는 취소할 수 없습니다. 반드시 확인 후 전송하세요.</div>
+      <div class="warning-box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 브로드캐스트 후에는 취소할 수 없습니다. 반드시 확인 후 전송하세요.</div>
       <textarea id="raw-tx" class="input textarea" rows="6" placeholder="서명된 트랜잭션 hex 붙여넣기&#10;예: 02000000..."></textarea>
       <div class="action-row">
-        <button class="btn" onclick="decodeTx(false)">🔍 먼저 확인</button>
-        <button class="btn danger" onclick="broadcastTx()">📤 브로드캐스트</button>
+        <button class="btn" onclick="decodeTx(false)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 먼저 확인</button>
+        <button class="btn danger" onclick="broadcastTx()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 브로드캐스트</button>
         <button class="btn secondary" onclick="clearTx()">지우기</button>
       </div>
       <div id="decode-preview" class="result-box" style="display:none"></div>
@@ -85,7 +85,7 @@
     </div>
 
     <div class="fee-estimator card" style="margin-top:20px">
-      <div class="section-title">💰 현재 추천 수수료</div>
+      <div class="section-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> 현재 추천 수수료</div>
       <div id="fee-grid" class="fee-grid"></div>
     </div>
   </div>

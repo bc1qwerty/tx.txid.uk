@@ -150,11 +150,11 @@ async function loadFees(){
   try{
     const f=await fetch(`${API}/v1/fees/recommended`,{signal:AbortSignal.timeout(8000)}).then(r=>r.json());
     document.getElementById('fee-grid').innerHTML=`
-      <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🚀 즉시 (~10분)</div></div>
-      <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">⚡ ~30분</div></div>
-      <div class="fee-card"><div class="fee-val">${f.hourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🕐 ~1시간</div></div>
-      <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">💤 경제 요금</div></div>
-      <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">🐌 최소</div></div>
+      <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> 즉시 (~10분)</div></div>
+      <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ~30분</div></div>
+      <div class="fee-card"><div class="fee-val">${f.hourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~1시간</div></div>
+      <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">경제 요금</div></div>
+      <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">최소</div></div>
     `;
   }catch{document.getElementById('fee-grid').innerHTML='<div style="color:var(--text3);font-size:.8rem">수수료 데이터 로드 실패</div>';}
 }
