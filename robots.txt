@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tx.txid.uk/sitemap.xml
