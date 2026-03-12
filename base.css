@@ -6,7 +6,7 @@
   --text1:#e6edf3; --text2:#8b949e; --text3:#6e7681;
   --accent:#f7931a; --accent2:#e07b10;
   --green:#3fb950; --red:#f85149; --blue:#58a6ff; --purple:#a371f7;
-  --max-w:1100px; --radius:10px;
+  --max-w:1200px; --radius:10px;
 }
 [data-theme="light"] {
   --bg:#f6f8fa; --bg2:#fff; --bg3:#eaeef2;
