@@ -305,9 +305,10 @@ loadFees();
 
 // ── 이벤트 리스너 (인라인 onclick 대체) ──
 document.getElementById('lang-btn')?.addEventListener('click', toggleLang);
-document.getElementById('lang-ko')?.addEventListener('click', () => setLang('ko'));
-document.getElementById('lang-en')?.addEventListener('click', () => setLang('en'));
-document.getElementById('lang-ja')?.addEventListener('click', () => setLang('ja'));
+document.querySelectorAll('#lang-menu button').forEach(function(btn) {
+  var lang = btn.textContent === '한국어' ? 'ko' : btn.textContent === 'English' ? 'en' : 'ja';
+  btn.addEventListener('click', function() { setLang(lang); });
+});
 document.getElementById('theme-btn')?.addEventListener('click', toggleTheme);
 
 document.querySelectorAll('.tab[data-tab]').forEach(btn => {
