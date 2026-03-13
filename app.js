@@ -23,17 +23,121 @@ function toggleLang(){const m=document.getElementById('lang-menu');m?.classList.
 document.addEventListener('click',e=>{const m=document.getElementById('lang-menu');if(m&&!e.target.closest('.lang-dropdown')){m.classList.remove('open');document.getElementById('lang-btn')?.setAttribute('aria-expanded','false');}});
 (function(){setLang(lang);})();
 
+// ── i18n 번역 ──
+const T = {
+  ko: {
+    invalid_hex: '유효한 hex를 입력하세요 (최대 1MB)',
+    parse_fail: '파싱 실패: 올바른 Raw TX hex가 아닙니다',
+    enter_raw_hex: 'Raw TX hex를 입력하세요',
+    version: '버전',
+    size: '크기',
+    input: '입력',
+    output: '출력',
+    unit_count: '개',
+    total_output: '총 출력',
+    confirm_broadcast: '이 트랜잭션을 비트코인 메인넷에 브로드캐스트하시겠습니까?\n한 번 전송하면 취소할 수 없습니다.',
+    sending: '전송 중…',
+    broadcast_ok: '✓ 브로드캐스트 성공!',
+    error_prefix: '❌ 오류: ',
+    network_error: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+    invalid_txid: '유효한 TXID를 입력하세요 (64자 hex)',
+    looking_up: '조회 중…',
+    confirmed: '✓ 확인됨',
+    unconfirmed: '미확인',
+    fee: '수수료',
+    fee_rate: '수수료율',
+    more_items: '더',
+    fee_load_fail: '수수료 데이터 로드 실패',
+    retry: '재시도',
+    fee_instant: '즉시 (~10분)',
+    fee_30min: '~30분',
+    fee_1hour: '~1시간',
+    fee_economy: '경제 요금',
+    fee_minimum: '최소',
+    lookup_error: '조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+    light_mode: '라이트 모드로 전환',
+    dark_mode: '다크 모드로 전환',
+  },
+  en: {
+    invalid_hex: 'Enter valid hex (max 1MB)',
+    parse_fail: 'Parse failed: not a valid Raw TX hex',
+    enter_raw_hex: 'Enter Raw TX hex',
+    version: 'Version',
+    size: 'Size',
+    input: 'Inputs',
+    output: 'Outputs',
+    unit_count: '',
+    total_output: 'Total Output',
+    confirm_broadcast: 'Broadcast this transaction to Bitcoin mainnet?\nOnce sent, it cannot be reversed.',
+    sending: 'Sending…',
+    broadcast_ok: '✓ Broadcast successful!',
+    error_prefix: '❌ Error: ',
+    network_error: 'Network error occurred. Please try again later.',
+    invalid_txid: 'Enter a valid TXID (64-char hex)',
+    looking_up: 'Looking up…',
+    confirmed: '✓ Confirmed',
+    unconfirmed: 'Unconfirmed',
+    fee: 'Fee',
+    fee_rate: 'Fee rate',
+    more_items: 'more',
+    fee_load_fail: 'Failed to load fee data',
+    retry: 'Retry',
+    fee_instant: 'Instant (~10min)',
+    fee_30min: '~30min',
+    fee_1hour: '~1hour',
+    fee_economy: 'Economy',
+    fee_minimum: 'Minimum',
+    lookup_error: 'Error during lookup. Please try again later.',
+    light_mode: 'Switch to light mode',
+    dark_mode: 'Switch to dark mode',
+  },
+  ja: {
+    invalid_hex: '有効なhexを入力してください (最大1MB)',
+    parse_fail: 'パース失敗：有効なRaw TX hexではありません',
+    enter_raw_hex: 'Raw TX hexを入力してください',
+    version: 'バージョン',
+    size: 'サイズ',
+    input: '入力',
+    output: '出力',
+    unit_count: '個',
+    total_output: '合計出力',
+    confirm_broadcast: 'このトランザクションをビットコインメインネットにブロードキャストしますか？\n一度送信すると取り消せません。',
+    sending: '送信中…',
+    broadcast_ok: '✓ ブロードキャスト成功！',
+    error_prefix: '❌ エラー: ',
+    network_error: 'ネットワークエラーが発生しました。しばらくしてから再試行してください。',
+    invalid_txid: '有効なTXIDを入力してください (64文字hex)',
+    looking_up: '検索中…',
+    confirmed: '✓ 確認済み',
+    unconfirmed: '未確認',
+    fee: '手数料',
+    fee_rate: '手数料率',
+    more_items: '件追加',
+    fee_load_fail: '手数料データの読み込みに失敗しました',
+    retry: '再試行',
+    fee_instant: '即時 (~10分)',
+    fee_30min: '~30分',
+    fee_1hour: '~1時間',
+    fee_economy: 'エコノミー',
+    fee_minimum: '最小',
+    lookup_error: '検索中にエラーが発生しました。しばらくしてから再試行してください。',
+    light_mode: 'ライトモードに切替',
+    dark_mode: 'ダークモードに切替',
+  },
+};
+function t(key){ return (T[lang]&&T[lang][key]) || T.en[key] || key; }
+
 const API='https://mempool.space/api';
 (function(){
-  const t=localStorage.getItem('theme')||'dark';
-  document.documentElement.setAttribute('data-theme',t);
+  const th=localStorage.getItem('theme')||'dark';
+  document.documentElement.setAttribute('data-theme',th);
   updateThemeBtn();
 })();
 function updateThemeBtn(){
   const btn=document.getElementById('theme-btn');if(!btn)return;
   const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   btn.innerHTML=isDark?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-  btn.title=isDark?'라이트 모드로 전환':'다크 모드로 전환';
+  btn.title=isDark?t('light_mode'):t('dark_mode');
 }
 function toggleTheme(){
   const h=document.documentElement;
@@ -46,15 +150,15 @@ let activeTab='broadcast';
 function switchTab(tab,panel,btn){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
   (btn||event?.target)?.classList.add('active');
-  document.getElementById(panel).style.display='block';
+  document.getElementById(panel).classList.remove('hidden');
 }
 
 function getHex(){return(document.getElementById('raw-tx')||{}).value?.trim()||'';}
-function clearTx(){document.getElementById('raw-tx').value='';['decode-preview','broadcast-result'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
+function clearTx(){document.getElementById('raw-tx').value='';['decode-preview','broadcast-result'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden');});}
 
-function showResult(id,html,show=true){const el=document.getElementById(id);if(!el)return;el.innerHTML=html;el.style.display=show?'block':'none';}
+function showResult(id,html,show=true){const el=document.getElementById(id);if(!el)return;el.innerHTML=html;if(show)el.classList.remove('hidden');else el.classList.add('hidden');}
 
 function parseTxHex(hex){
   // 간략한 raw tx 파서 (버전 / vin / vout 개수)
@@ -103,83 +207,83 @@ function scriptToType(script){
 function decodeTx(standalone){
   const hex=(standalone?document.getElementById('decode-tx'):document.getElementById('raw-tx'))?.value.trim();
   const resultId=standalone?'decode-result':'decode-preview';
-  if(!hex||!/^[0-9a-fA-F]+$/.test(hex)||hex.length>2000000){showResult(resultId,'<span class="result-err">유효한 hex를 입력하세요 (최대 1MB)</span>');return;}
+  if(!hex||!/^[0-9a-fA-F]+$/.test(hex)||hex.length>2000000){showResult(resultId,`<span class="result-err">${t('invalid_hex')}</span>`);return;}
   const tx=parseTxHex(hex);
-  if(!tx){showResult(resultId,'<span class="result-err">파싱 실패: 올바른 Raw TX hex가 아닙니다</span>');return;}
+  if(!tx){showResult(resultId,`<span class="result-err">${t('parse_fail')}</span>`);return;}
   const html=`
-    <div><span style="color:var(--text3)">버전:</span> <span style="color:var(--accent)">${tx.version}</span> · <span style="color:var(--text3)">크기:</span> ${tx.size} bytes · ${tx.segwit?'<span class="badge badge-blue">SegWit</span>':'Legacy'}</div>
+    <div><span class="text-muted">${t('version')}:</span> <span class="text-accent">${tx.version}</span> · <span class="text-muted">${t('size')}:</span> ${tx.size} bytes · ${tx.segwit?'<span class="badge badge-blue">SegWit</span>':'Legacy'}</div>
     <div class="tx-section">
-      <div class="tx-section-title">입력 (${tx.inCount}개)</div>
-      ${tx.ins.map((v,i)=>`<div class="io-row"><span class="io-addr">${v.prevHash.slice(0,20)}…:${v.prevIdx}</span><span style="color:var(--text3);font-size:.65rem">${scriptToType(v.script)}</span></div>`).join('')}
+      <div class="tx-section-title">${t('input')} (${tx.inCount}${t('unit_count')})</div>
+      ${tx.ins.map((v,i)=>`<div class="io-row"><span class="io-addr">${v.prevHash.slice(0,20)}…:${v.prevIdx}</span><span class="text-muted-small">${scriptToType(v.script)}</span></div>`).join('')}
     </div>
     <div class="tx-section">
-      <div class="tx-section-title">출력 (${tx.outCount}개)</div>
+      <div class="tx-section-title">${t('output')} (${tx.outCount}${t('unit_count')})</div>
       ${tx.outs.map((o,i)=>`<div class="io-row"><span class="io-addr">${scriptToType(o.script)}</span><span class="io-val">${(o.value/1e8).toFixed(8)} BTC</span></div>`).join('')}
     </div>
-    <div style="margin-top:10px;color:var(--accent)">총 출력: ${(tx.totalOut/1e8).toFixed(8)} BTC</div>`;
+    <div class="total-output">${t('total_output')}: ${(tx.totalOut/1e8).toFixed(8)} BTC</div>`;
   showResult(resultId,html);
 }
 
 async function broadcastTx(){
   const hex=getHex();
-  if(!hex){showResult('broadcast-result','<span class="result-err">Raw TX hex를 입력하세요</span>');return;}
-  if(!confirm('이 트랜잭션을 비트코인 메인넷에 브로드캐스트하시겠습니까?\n한 번 전송하면 취소할 수 없습니다.'))return;
-  showResult('broadcast-result','전송 중…');
+  if(!hex){showResult('broadcast-result',`<span class="result-err">${t('enter_raw_hex')}</span>`);return;}
+  if(!confirm(t('confirm_broadcast')))return;
+  showResult('broadcast-result',t('sending'));
   try{
     const res=await fetch(`${API}/tx`,{method:'POST',body:hex,headers:{'Content-Type':'text/plain'},signal:AbortSignal.timeout(15000)});
     const txid=await res.text();
     if(res.ok){
       const isTxid=/^[0-9a-fA-F]{64}$/.test(txid.trim());
-      const txLink=isTxid?`<a href="https://txid.uk/#/tx/${txid.trim()}" style="color:var(--accent)" target="_blank">${txid.trim()}</a>`:escHtml(txid);
-      showResult('broadcast-result',`<div class="result-ok">✓ 브로드캐스트 성공!</div><div style="margin-top:8px;color:var(--text2)">TXID: ${txLink}</div>`);
+      const txLink=isTxid?`<a href="https://txid.uk/#/tx/${txid.trim()}" class="broadcast-link" target="_blank">${txid.trim()}</a>`:escHtml(txid);
+      showResult('broadcast-result',`<div class="result-ok">${t('broadcast_ok')}</div><div class="broadcast-txid">TXID: ${txLink}</div>`);
     }
-    else{showResult('broadcast-result',`<span class="result-err">❌ 오류: ${escHtml(txid.slice(0,200))}</span>`);}
-  }catch(e){console.error('broadcastTx error:', e); showResult('broadcast-result','<span class="result-err">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</span>');}
+    else{showResult('broadcast-result',`<span class="result-err">${t('error_prefix')}${escHtml(txid.slice(0,200))}</span>`);}
+  }catch(e){console.error('broadcastTx error:', e); showResult('broadcast-result',`<span class="result-err">${t('network_error')}</span>`);}
 }
 
 async function lookupTx(){
   const txid=document.getElementById('txid-input').value.trim();
-  if(!/^[0-9a-fA-F]{64}$/.test(txid)){showResult('lookup-result','<span class="result-err">유효한 TXID를 입력하세요 (64자 hex)</span>');return;}
-  showResult('lookup-result','조회 중…');
+  if(!/^[0-9a-fA-F]{64}$/.test(txid)){showResult('lookup-result',`<span class="result-err">${t('invalid_txid')}</span>`);return;}
+  showResult('lookup-result',t('looking_up'));
   try{
     const tx=await fetchRetry(`${API}/tx/${txid}`,10000).then(r=>r.json());
     const totalIn=tx.vin.reduce((s,v)=>s+(v.prevout?.value||0),0);
     const totalOut=tx.vout.reduce((s,v)=>s+(v.value||0),0);
     const html=`
-      <div><a href="https://txid.uk/#/tx/${txid}" style="color:var(--accent)">${txid.slice(0,20)}…</a>
-        ${tx.status?.confirmed?`<span class="badge badge-green" style="margin-left:8px">✓ 확인됨 #${tx.status.block_height}</span>`:`<span class="badge badge-orange" style="margin-left:8px">미확인</span>`}
+      <div><a href="https://txid.uk/#/tx/${txid}" class="broadcast-link">${txid.slice(0,20)}…</a>
+        ${tx.status?.confirmed?`<span class="badge badge-green badge-ml">${t('confirmed')} #${tx.status.block_height}</span>`:`<span class="badge badge-orange badge-ml">${t('unconfirmed')}</span>`}
       </div>
-      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem">
-        <span><span style="color:var(--text3)">크기:</span> ${tx.size} B / ${tx.vsize} vB</span>
-        <span><span style="color:var(--text3)">수수료:</span> <span style="color:var(--accent)">${(tx.fee||0).toLocaleString()} sat</span></span>
-        <span><span style="color:var(--text3)">수수료율:</span> ${tx.vsize?(tx.fee/tx.vsize).toFixed(1):0} sat/vB</span>
-        <span><span style="color:var(--text3)">총 출력:</span> ${(totalOut/1e8).toFixed(4)} BTC</span>
+      <div class="lookup-grid">
+        <span><span class="text-muted">${t('size')}:</span> ${tx.size} B / ${tx.vsize} vB</span>
+        <span><span class="text-muted">${t('fee')}:</span> <span class="text-accent">${(tx.fee||0).toLocaleString()} sat</span></span>
+        <span><span class="text-muted">${t('fee_rate')}:</span> ${tx.vsize?(tx.fee/tx.vsize).toFixed(1):0} sat/vB</span>
+        <span><span class="text-muted">${t('total_output')}:</span> ${(totalOut/1e8).toFixed(4)} BTC</span>
       </div>
       <div class="tx-section">
-        <div class="tx-section-title">입력 ${tx.vin.length}개</div>
+        <div class="tx-section-title">${t('input')} ${tx.vin.length}${t('unit_count')}</div>
         ${tx.vin.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${escHtml(v.prevout?.scriptpubkey_address||(v.coinbase?'Coinbase':'—'))}</span><span class="io-val">${((v.prevout?.value||0)/1e8).toFixed(4)} BTC</span></div>`).join('')}
-        ${tx.vin.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vin.length-5}개 더</div>`:''}
+        ${tx.vin.length>5?`<div class="text-muted-extra">+${tx.vin.length-5} ${t('more_items')}</div>`:''}
       </div>
       <div class="tx-section">
-        <div class="tx-section-title">출력 ${tx.vout.length}개</div>
+        <div class="tx-section-title">${t('output')} ${tx.vout.length}${t('unit_count')}</div>
         ${tx.vout.slice(0,5).map(v=>`<div class="io-row"><span class="io-addr">${escHtml(v.scriptpubkey_address||'—')}</span><span class="io-val">${(v.value/1e8).toFixed(4)} BTC</span></div>`).join('')}
-        ${tx.vout.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vout.length-5}개 더</div>`:''}
+        ${tx.vout.length>5?`<div class="text-muted-extra">+${tx.vout.length-5} ${t('more_items')}</div>`:''}
       </div>`;
     showResult('lookup-result',html);
-  }catch(e){console.error('lookupTx error:', e); showResult('lookup-result','<span class="result-err">조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</span>');}
+  }catch(e){console.error('lookupTx error:', e); showResult('lookup-result',`<span class="result-err">${t('lookup_error')}</span>`);}
 }
 
 async function loadFees(){
   try{
     const f=await fetchRetry(`${API}/v1/fees/recommended`,8000).then(r=>r.json());
     document.getElementById('fee-grid').innerHTML=`
-      <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> 즉시 (~10분)</div></div>
-      <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ~30분</div></div>
-      <div class="fee-card"><div class="fee-val">${f.hourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~1시간</div></div>
-      <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">경제 요금</div></div>
-      <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">최소</div></div>
+      <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> ${t('fee_instant')}</div></div>
+      <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ${t('fee_30min')}</div></div>
+      <div class="fee-card"><div class="fee-val">${f.hourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${t('fee_1hour')}</div></div>
+      <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">${t('fee_economy')}</div></div>
+      <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">${t('fee_minimum')}</div></div>
     `;
-  }catch(e){console.error('loadFees error:', e); document.getElementById('fee-grid').innerHTML='<div style="color:var(--text3);font-size:.8rem">수수료 데이터 로드 실패 <button onclick="loadFees()" style="margin-left:8px;padding:2px 8px;font-size:.72rem;cursor:pointer">재시도</button></div>';}
+  }catch(e){console.error('loadFees error:', e); const grid=document.getElementById('fee-grid'); grid.innerHTML=`<div class="fee-retry-msg">${t('fee_load_fail')} <button id="btn-fee-retry" class="retry-btn">${t('retry')}</button></div>`; document.getElementById('btn-fee-retry')?.addEventListener('click',()=>loadFees());}
 }
 
 document.getElementById('txid-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')lookupTx();});
@@ -192,9 +296,26 @@ loadFees();
   document.getElementById('txid-input').value = txid;
   // lookup 탭으로 전환 후 조회
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
   document.querySelectorAll('.tab')[2]?.classList.add('active');
-  document.getElementById('lookup-panel').style.display = 'block';
+  document.getElementById('lookup-panel').classList.remove('hidden');
   lookupTx();
   history.replaceState(null, '', location.pathname);
 })();
+
+// ── 이벤트 리스너 (인라인 onclick 대체) ──
+document.getElementById('lang-btn')?.addEventListener('click', toggleLang);
+document.getElementById('lang-ko')?.addEventListener('click', () => setLang('ko'));
+document.getElementById('lang-en')?.addEventListener('click', () => setLang('en'));
+document.getElementById('lang-ja')?.addEventListener('click', () => setLang('ja'));
+document.getElementById('theme-btn')?.addEventListener('click', toggleTheme);
+
+document.querySelectorAll('.tab[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab, btn.dataset.panel, btn));
+});
+
+document.getElementById('btn-decode')?.addEventListener('click', () => decodeTx(false));
+document.getElementById('btn-broadcast')?.addEventListener('click', broadcastTx);
+document.getElementById('btn-clear')?.addEventListener('click', clearTx);
+document.getElementById('btn-decode-only')?.addEventListener('click', () => decodeTx(true));
+document.getElementById('btn-lookup')?.addEventListener('click', lookupTx);

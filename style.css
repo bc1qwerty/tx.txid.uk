@@ -47,3 +47,44 @@ header { background: var(--bg2); border-bottom: 1px solid var(--border); positio
 .lang-menu.open{display:block;}
 .lang-menu button{display:block;width:100%;text-align:left;padding:8px 14px;background:none;border:none;color:var(--text2);font-family:var(--font-ko);font-size:.78rem;cursor:pointer;transition:background .15s,color .15s;}
 .lang-menu button:hover{background:var(--bg3);color:var(--accent);}
+
+/* Skip link */
+.skip-link{position:absolute;top:-40px;left:0;background:var(--accent);color:#fff;padding:8px 16px;z-index:1000;font-size:.8rem;font-family:var(--font-ko);transition:top .2s;text-decoration:none;border-radius:0 0 4px 0}
+.skip-link:focus{top:0}
+
+/* Learn links */
+.learn-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;margin:10px auto;max-width:860px;font-size:.78rem}
+.learn-links svg{color:var(--text3);flex-shrink:0}
+.learn-label{color:var(--text3);font-family:var(--font-ko);white-space:nowrap;margin-right:2px}
+.learn-chip{color:var(--text2);text-decoration:none;padding:3px 10px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-ko);font-size:.72rem;transition:all .15s;white-space:nowrap}
+.learn-chip:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Appbar */
+.appbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--bg2);position:fixed;bottom:0;left:0;right:0;z-index:90;backdrop-filter:blur(10px)}
+.appbar a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:var(--text2);font-size:.62rem;font-family:var(--font-ko);background:var(--bg3);min-width:56px;transition:all .2s}
+.appbar a:hover,.appbar a.active{border-color:var(--accent);color:var(--accent)}
+.appbar a svg{flex-shrink:0}
+@media(max-width:768px){.appbar{display:none !important;}}
+
+/* Utility classes for CSP compliance (no unsafe-inline) */
+.hidden{display:none !important}
+.icon-inline{flex-shrink:0;margin-right:6px}
+.icon-noshrink{flex-shrink:0}
+.icon-section{display:inline;vertical-align:middle}
+.auth-mount{position:relative;display:inline-flex}
+.fee-section{margin-top:20px}
+.text-muted{color:var(--text3)}
+.text-accent{color:var(--accent)}
+.text-muted-small{color:var(--text3);font-size:.65rem}
+.text-muted-extra{color:var(--text3);font-size:.68rem}
+.badge-ml{margin-left:8px}
+.lookup-grid{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem}
+.fee-retry-msg{color:var(--text3);font-size:.8rem}
+.retry-btn{margin-left:8px;padding:2px 8px;font-size:.72rem;cursor:pointer}
+.broadcast-link{color:var(--accent)}
+.broadcast-txid{margin-top:8px;color:var(--text2)}
+.total-output{margin-top:10px;color:var(--accent)}
+
+/* Focus indicator for keyboard navigation (WCAG 2.1 AA) */
+:focus-visible{outline:2px solid var(--accent,#f7931a);outline-offset:2px;border-radius:2px}
+:focus:not(:focus-visible){outline:none}
