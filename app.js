@@ -1,4 +1,5 @@
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function fetchRetry(url,timeout,retries){for(let i=0,m=retries||2;i<=m;i++){try{return await fetch(url,{signal:AbortSignal.timeout(timeout||10000)});}catch(e){if(i>=m)throw e;await new Promise(r=>setTimeout(r,1000<<i));}}}
 'use strict';
 
 // ── 언어 ──
@@ -18,8 +19,8 @@ function setLang(l){
     if(val) el.textContent=val;
   });
 }
-function toggleLang(){document.getElementById('lang-menu')?.classList.toggle('open');}
-document.addEventListener('click',e=>{const m=document.getElementById('lang-menu');if(m&&!e.target.closest('.lang-dropdown'))m.classList.remove('open');});
+function toggleLang(){const m=document.getElementById('lang-menu');m?.classList.toggle('open');document.getElementById('lang-btn')?.setAttribute('aria-expanded',m?.classList.contains('open')||false);}
+document.addEventListener('click',e=>{const m=document.getElementById('lang-menu');if(m&&!e.target.closest('.lang-dropdown')){m.classList.remove('open');document.getElementById('lang-btn')?.setAttribute('aria-expanded','false');}});
 (function(){setLang(lang);})();
 
 const API='https://mempool.space/api';
@@ -133,7 +134,7 @@ async function broadcastTx(){
       showResult('broadcast-result',`<div class="result-ok">✓ 브로드캐스트 성공!</div><div style="margin-top:8px;color:var(--text2)">TXID: ${txLink}</div>`);
     }
     else{showResult('broadcast-result',`<span class="result-err">❌ 오류: ${escHtml(txid.slice(0,200))}</span>`);}
-  }catch(e){showResult('broadcast-result',`<span class="result-err">네트워크 오류: ${e.message}</span>`);}
+  }catch(e){console.error('broadcastTx error:', e); showResult('broadcast-result','<span class="result-err">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</span>');}
 }
 
 async function lookupTx(){
@@ -141,7 +142,7 @@ async function lookupTx(){
   if(!/^[0-9a-fA-F]{64}$/.test(txid)){showResult('lookup-result','<span class="result-err">유효한 TXID를 입력하세요 (64자 hex)</span>');return;}
   showResult('lookup-result','조회 중…');
   try{
-    const tx=await fetch(`${API}/tx/${txid}`,{signal:AbortSignal.timeout(10000)}).then(r=>r.json());
+    const tx=await fetchRetry(`${API}/tx/${txid}`,10000).then(r=>r.json());
     const totalIn=tx.vin.reduce((s,v)=>s+(v.prevout?.value||0),0);
     const totalOut=tx.vout.reduce((s,v)=>s+(v.value||0),0);
     const html=`
@@ -165,12 +166,12 @@ async function lookupTx(){
         ${tx.vout.length>5?`<div style="color:var(--text3);font-size:.68rem">+${tx.vout.length-5}개 더</div>`:''}
       </div>`;
     showResult('lookup-result',html);
-  }catch(e){showResult('lookup-result',`<span class="result-err">조회 실패: ${e.message}</span>`);}
+  }catch(e){console.error('lookupTx error:', e); showResult('lookup-result','<span class="result-err">조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</span>');}
 }
 
 async function loadFees(){
   try{
-    const f=await fetch(`${API}/v1/fees/recommended`,{signal:AbortSignal.timeout(8000)}).then(r=>r.json());
+    const f=await fetchRetry(`${API}/v1/fees/recommended`,8000).then(r=>r.json());
     document.getElementById('fee-grid').innerHTML=`
       <div class="fee-card"><div class="fee-val">${f.fastestFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> 즉시 (~10분)</div></div>
       <div class="fee-card"><div class="fee-val">${f.halfHourFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ~30분</div></div>
@@ -178,7 +179,7 @@ async function loadFees(){
       <div class="fee-card"><div class="fee-val">${f.economyFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">경제 요금</div></div>
       <div class="fee-card"><div class="fee-val">${f.minimumFee}</div><div class="fee-sub">sat/vB</div><div class="fee-time">최소</div></div>
     `;
-  }catch{document.getElementById('fee-grid').innerHTML='<div style="color:var(--text3);font-size:.8rem">수수료 데이터 로드 실패</div>';}
+  }catch(e){console.error('loadFees error:', e); document.getElementById('fee-grid').innerHTML='<div style="color:var(--text3);font-size:.8rem">수수료 데이터 로드 실패 <button onclick="loadFees()" style="margin-left:8px;padding:2px 8px;font-size:.72rem;cursor:pointer">재시도</button></div>';}
 }
 
 document.getElementById('txid-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')lookupTx();});
