@@ -69,47 +69,47 @@
 <main id="main">
   <div class="hero">
     <h1>TX <span class="accent">Builder</span></h1>
-    <p class="hero-sub">Raw Transaction 분석 · PSBT 디코더 · 네트워크 브로드캐스트</p>
+    <p class="hero-sub" data-ko="Raw Transaction 분석 · PSBT 디코더 · 네트워크 브로드캐스트" data-en="Raw Transaction Analysis · PSBT Decoder · Network Broadcast" data-ja="Rawトランザクション分析 · PSBTデコーダー · ブロードキャスト">Raw Transaction 분석 · PSBT 디코더 · 네트워크 브로드캐스트</p>
   </div>
 
   <div class="content">
     <div class="tabs">
-      <button class="tab active" id="tab-broadcast" data-tab="broadcast" data-panel="broadcast-panel"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 브로드캐스트</button>
-      <button class="tab" id="tab-decode" data-tab="decode" data-panel="decode-panel"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Raw TX 디코드</button>
-      <button class="tab" id="tab-lookup" data-tab="lookup" data-panel="lookup-panel">🔎 TX 조회</button>
+      <button class="tab active" id="tab-broadcast" data-tab="broadcast" data-panel="broadcast-panel"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> <span data-ko="브로드캐스트" data-en="Broadcast" data-ja="ブロードキャスト">브로드캐스트</span></button>
+      <button class="tab" id="tab-decode" data-tab="decode" data-panel="decode-panel"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <span data-ko="Raw TX 디코드" data-en="Decode Raw TX" data-ja="Raw TX デコード">Raw TX 디코드</span></button>
+      <button class="tab" id="tab-lookup" data-tab="lookup" data-panel="lookup-panel">🔎 <span data-ko="TX 조회" data-en="TX Lookup" data-ja="TX検索">TX 조회</span></button>
     </div>
 
     <div id="broadcast-panel" class="panel">
-      <div class="panel-desc">서명된 Raw 트랜잭션을 비트코인 메인넷에 브로드캐스트합니다.</div>
-      <div class="warning-box"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 브로드캐스트 후에는 취소할 수 없습니다. 반드시 확인 후 전송하세요.</div>
-      <textarea id="raw-tx" class="input textarea" rows="6" placeholder="서명된 트랜잭션 hex 붙여넣기&#10;예: 02000000..." aria-label="서명된 Raw TX hex"></textarea>
+      <div class="panel-desc" data-ko="서명된 Raw 트랜잭션을 비트코인 메인넷에 브로드캐스트합니다." data-en="Broadcast a signed raw transaction to the Bitcoin mainnet." data-ja="署名済みRawトランザクションをビットコインメインネットにブロードキャストします。">서명된 Raw 트랜잭션을 비트코인 메인넷에 브로드캐스트합니다.</div>
+      <div class="warning-box"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <span data-ko="브로드캐스트 후에는 취소할 수 없습니다. 반드시 확인 후 전송하세요." data-en="Broadcasts cannot be reversed. Please verify before sending." data-ja="ブロードキャスト後は取り消しできません。必ず確認してから送信してください。">브로드캐스트 후에는 취소할 수 없습니다. 반드시 확인 후 전송하세요.</span></div>
+      <textarea id="raw-tx" class="input textarea" rows="6" placeholder="서명된 트랜잭션 hex 붙여넣기&#10;예: 02000000..." data-ko="서명된 트랜잭션 hex 붙여넣기" data-en="Paste signed transaction hex" data-ja="署名済みトランザクションhexを貼り付け" aria-label="서명된 Raw TX hex"></textarea>
       <div class="action-row">
-        <button class="btn" id="btn-decode"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 먼저 확인</button>
-        <button class="btn danger" id="btn-broadcast"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 브로드캐스트</button>
-        <button class="btn secondary" id="btn-clear">지우기</button>
+        <button class="btn" id="btn-decode"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <span data-ko="먼저 확인" data-en="Preview" data-ja="確認">먼저 확인</span></button>
+        <button class="btn danger" id="btn-broadcast"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> <span data-ko="브로드캐스트" data-en="Broadcast" data-ja="ブロードキャスト">브로드캐스트</span></button>
+        <button class="btn secondary" id="btn-clear" data-ko="지우기" data-en="Clear" data-ja="クリア">지우기</button>
       </div>
       <div id="decode-preview" class="result-box hidden"></div>
       <div id="broadcast-result" class="result-box hidden"></div>
     </div>
 
     <div id="decode-panel" class="panel hidden">
-      <div class="panel-desc">Raw TX hex를 파싱하여 입출력 상세 정보를 표시합니다.</div>
-      <textarea id="decode-tx" class="input textarea" rows="6" placeholder="Raw TX hex 입력" aria-label="Raw TX hex 디코드"></textarea>
-      <button class="btn" id="btn-decode-only">디코드</button>
+      <div class="panel-desc" data-ko="Raw TX hex를 파싱하여 입출력 상세 정보를 표시합니다." data-en="Parse and decode raw transaction hex to show detailed input/output info." data-ja="Raw TX hexをパースしてデコードし、入出力の詳細情報を表示します。">Raw TX hex를 파싱하여 입출력 상세 정보를 표시합니다.</div>
+      <textarea id="decode-tx" class="input textarea" rows="6" placeholder="Raw TX hex 입력" data-ko="Raw TX hex 입력" data-en="Enter Raw TX hex" data-ja="Raw TX hex入力" aria-label="Raw TX hex 디코드"></textarea>
+      <button class="btn" id="btn-decode-only" data-ko="디코드" data-en="Decode" data-ja="デコード">디코드</button>
       <div id="decode-result" class="result-box hidden"></div>
     </div>
 
     <div id="lookup-panel" class="panel hidden">
-      <div class="panel-desc">TXID로 네트워크에서 트랜잭션을 조회합니다.</div>
+      <div class="panel-desc" data-ko="TXID로 네트워크에서 트랜잭션을 조회합니다." data-en="Look up a transaction on the network by TXID." data-ja="TXIDでネットワーク上のトランザクションを検索します。">TXID로 네트워크에서 트랜잭션을 조회합니다.</div>
       <div class="search-row">
-        <input id="txid-input" class="input" placeholder="TXID 64자 hex 입력" aria-label="TXID 조회" spellcheck="false">
-        <button class="btn" id="btn-lookup">조회</button>
+        <input id="txid-input" class="input" placeholder="TXID 64자 hex 입력" data-ko="TXID 64자 hex 입력" data-en="Enter TXID (64-char hex)" data-ja="TXID 64文字hex入力" aria-label="TXID 조회" spellcheck="false">
+        <button class="btn" id="btn-lookup" data-ko="조회" data-en="Lookup" data-ja="検索">조회</button>
       </div>
       <div id="lookup-result" class="result-box hidden"></div>
     </div>
 
     <div class="fee-estimator card fee-section">
-      <div class="section-title"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> 현재 추천 수수료</div>
+      <div class="section-title"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> <span data-ko="현재 추천 수수료" data-en="Recommended Fees" data-ja="推奨手数料">현재 추천 수수료</span></div>
       <div id="fee-grid" class="fee-grid"></div>
     </div>
   </div>
