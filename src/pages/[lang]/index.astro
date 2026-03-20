@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Header from '@txid/ui/components/Header.astro';
 import Footer from '@txid/ui/components/Footer.astro';
+import RecentBroadcasts from '../../components/RecentBroadcasts.astro';
 import '../../styles/global.css';
 
 export function getStaticPaths() {
@@ -116,6 +117,8 @@ const learnLangPrefix = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'ko';
         <div class="section-title"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-section"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> <span>{tx('feeTitle')}</span></div>
         <div id="fee-grid" class="fee-grid"></div>
       </div>
+
+      <RecentBroadcasts lang={lang} />
     </div>
   </main>
 
@@ -351,6 +354,10 @@ const learnLangPrefix = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'ko';
           const isTxid = /^[0-9a-fA-F]{64}$/.test(txid.trim());
           const txLink = isTxid ? `<a href="https://txid.uk/#/tx/${txid.trim()}" class="broadcast-link" target="_blank">${txid.trim()}</a>` : escHtml(txid);
           showResult('broadcast-result', `<div class="result-ok">${t('broadcast_ok')}</div><div class="broadcast-txid">TXID: ${txLink}</div>`);
+          // Save to recent broadcasts history
+          if (isTxid && (window as any).txidSaveBroadcast) {
+            (window as any).txidSaveBroadcast(txid.trim());
+          }
         } else {
           showResult('broadcast-result', `<span class="result-err">${t('error_prefix')}${escHtml(txid.slice(0, 200))}</span>`);
         }

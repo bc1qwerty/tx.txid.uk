@@ -1,0 +1,231 @@
+---
+interface Props {
+  lang?: string;
+}
+
+const { lang = 'en' } = Astro.props;
+
+const i18n: Record<string, Record<string, string>> = {
+  title: { ko: '최근 브로드캐스트', en: 'Recent Broadcasts', ja: '最近のブロードキャスト' },
+  empty: { ko: '아직 브로드캐스트한 트랜잭션이 없습니다', en: 'No broadcasts yet', ja: 'まだブロードキャストしたトランザクションはありません' },
+  viewOnExplorer: { ko: '탐색기에서 보기', en: 'View on Explorer', ja: '探索で表示' },
+  clearHistory: { ko: '기록 삭제', en: 'Clear History', ja: '履歴を削除' },
+  justNow: { ko: '방금 전', en: 'Just now', ja: 'たった今' },
+  minutesAgo: { ko: '분 전', en: 'min ago', ja: '分前' },
+  hoursAgo: { ko: '시간 전', en: 'hr ago', ja: '時間前' },
+  daysAgo: { ko: '일 전', en: 'day(s) ago', ja: '日前' },
+};
+
+const tx = (key: string) => i18n[key]?.[lang] || i18n[key]?.en || key;
+---
+
+<div class="recent-broadcasts card" id="recent-broadcasts">
+  <div class="section-title">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="icon-section"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span data-ko="최근 브로드캐스트" data-en="Recent Broadcasts" data-ja="最近のブロードキャスト">{tx('title')}</span>
+  </div>
+  <div id="recent-list" class="recent-list">
+    <div class="empty" data-ko="아직 브로드캐스트한 트랜잭션이 없습니다" data-en="No broadcasts yet" data-ja="まだブロードキャストしたトランザクションはありません">{tx('empty')}</div>
+  </div>
+  <div id="recent-clear-wrap" class="recent-clear-wrap" style="display:none">
+    <button class="btn secondary recent-clear-btn" id="btn-clear-history" type="button"
+      data-ko="기록 삭제" data-en="Clear History" data-ja="履歴を削除">{tx('clearHistory')}</button>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'txid_recent_broadcasts';
+  const MAX_ITEMS = 5;
+
+  interface BroadcastEntry {
+    txid: string;
+    timestamp: number;
+  }
+
+  function getRecentBroadcasts(): BroadcastEntry[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      return JSON.parse(raw).slice(0, MAX_ITEMS);
+    } catch {
+      return [];
+    }
+  }
+
+  function saveBroadcast(txid: string) {
+    const existing = getRecentBroadcasts();
+    // Deduplicate
+    const filtered = existing.filter(e => e.txid !== txid);
+    filtered.unshift({ txid, timestamp: Date.now() });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered.slice(0, MAX_ITEMS)));
+    renderRecentBroadcasts();
+  }
+
+  function clearBroadcastHistory() {
+    localStorage.removeItem(STORAGE_KEY);
+    renderRecentBroadcasts();
+  }
+
+  function timeAgo(timestamp: number): string {
+    const lang = localStorage.getItem('lang') || 'en';
+    const diffMs = Date.now() - timestamp;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHr = Math.floor(diffMs / 3600000);
+    const diffDay = Math.floor(diffMs / 86400000);
+
+    const labels: Record<string, Record<string, string>> = {
+      justNow: { ko: '방금 전', en: 'Just now', ja: 'たった今' },
+      minutesAgo: { ko: '분 전', en: 'min ago', ja: '分前' },
+      hoursAgo: { ko: '시간 전', en: 'hr ago', ja: '時間前' },
+      daysAgo: { ko: '일 전', en: 'day(s) ago', ja: '日前' },
+    };
+
+    const t = (key: string) => labels[key]?.[lang] || labels[key]?.en || '';
+
+    if (diffMin < 1) return t('justNow');
+    if (diffMin < 60) return `${diffMin} ${t('minutesAgo')}`;
+    if (diffHr < 24) return `${diffHr} ${t('hoursAgo')}`;
+    return `${diffDay} ${t('daysAgo')}`;
+  }
+
+  function escapeHtml(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function renderRecentBroadcasts() {
+    const list = document.getElementById('recent-list');
+    const clearWrap = document.getElementById('recent-clear-wrap');
+    if (!list) return;
+
+    const entries = getRecentBroadcasts();
+    const lang = localStorage.getItem('lang') || 'en';
+
+    const emptyLabels: Record<string, string> = {
+      ko: '아직 브로드캐스트한 트랜잭션이 없습니다',
+      en: 'No broadcasts yet',
+      ja: 'まだブロードキャストしたトランザクションはありません',
+    };
+
+    const viewLabels: Record<string, string> = {
+      ko: '탐색기에서 보기',
+      en: 'View on Explorer',
+      ja: '探索で表示',
+    };
+
+    if (entries.length === 0) {
+      list.innerHTML = `<div class="empty">${escapeHtml(emptyLabels[lang] || emptyLabels.en)}</div>`;
+      if (clearWrap) clearWrap.style.display = 'none';
+      return;
+    }
+
+    if (clearWrap) clearWrap.style.display = 'flex';
+
+    list.innerHTML = entries.map(entry => {
+      const shortTxid = entry.txid.slice(0, 8) + '...' + entry.txid.slice(-8);
+      const ago = timeAgo(entry.timestamp);
+      return `
+        <div class="recent-entry">
+          <div class="recent-txid-row">
+            <span class="recent-txid" title="${escapeHtml(entry.txid)}">${escapeHtml(shortTxid)}</span>
+            <span class="recent-time">${escapeHtml(ago)}</span>
+          </div>
+          <a href="https://txid.uk/#/tx/${escapeHtml(entry.txid)}" class="recent-link" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            ${escapeHtml(viewLabels[lang] || viewLabels.en)}
+          </a>
+        </div>`;
+    }).join('');
+  }
+
+  // Expose globally so broadcast function can call it
+  (window as any).txidSaveBroadcast = saveBroadcast;
+
+  // Render on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecentBroadcasts();
+      document.getElementById('btn-clear-history')?.addEventListener('click', clearBroadcastHistory);
+    });
+  } else {
+    renderRecentBroadcasts();
+    document.getElementById('btn-clear-history')?.addEventListener('click', clearBroadcastHistory);
+  }
+</script>
+
+<style>
+  .recent-broadcasts {
+    margin-top: 20px;
+  }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .recent-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: border-color .2s;
+  }
+
+  .recent-entry:hover {
+    border-color: var(--border2, var(--border));
+  }
+
+  .recent-txid-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .recent-txid {
+    font-family: var(--font);
+    font-size: .75rem;
+    color: var(--text1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .recent-time {
+    font-size: .65rem;
+    color: var(--text3);
+    font-family: var(--font-ko);
+  }
+
+  .recent-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .7rem;
+    color: var(--accent-text);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity .2s;
+  }
+
+  .recent-link:hover {
+    opacity: .8;
+  }
+
+  .recent-clear-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .recent-clear-btn {
+    font-size: .72rem;
+    padding: 5px 12px;
+  }
+</style>
