@@ -7,7 +7,7 @@ export default defineConfig({
   site: 'https://tx.txid.uk',
   integrations: [sitemap()],
   prefetch: {
-    prefetchAll: true,
+    prefetchAll: false,
     defaultStrategy: 'viewport',
   },
   build: {
