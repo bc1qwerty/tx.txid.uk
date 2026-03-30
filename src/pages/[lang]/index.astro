@@ -48,6 +48,7 @@ const i18n: Record<string, Record<string, string>> = {
   txidPlaceholder: { ko: 'TXID 64자 hex 입력', en: 'Enter TXID (64-char hex)', ja: 'TXID 64文字hex入力' },
   lookupBtn: { ko: '조회', en: 'Lookup', ja: '検索' },
   feeTitle: { ko: '현재 추천 수수료', en: 'Recommended Fees', ja: '推奨手数料' },
+  stuckBanner: { ko: '트랜잭션이 멈췄나요? RBF, CPFP 등 해결법 가이드 →', en: 'Transaction stuck? Fix it with RBF, CPFP & more →', ja: 'トランザクションが停滞？RBF・CPFPなどの解決ガイド →' },
 };
 
 const tx = (key: string) => i18n[key]?.[lang!] || i18n[key]?.en || key;
@@ -68,6 +69,11 @@ const learnLangPrefix = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'ko';
     <a class="learn-chip" data-slug="how-to-read-bitcoin-transaction" href={`https://learn.txid.uk/${learnLangPrefix}/blog/how-to-read-bitcoin-transaction/`} target="_blank" rel="noopener">{tx('readTxChip')}</a>
     <a class="learn-chip" data-slug="bitcoin-fee-guide" href={`https://learn.txid.uk/${learnLangPrefix}/blog/bitcoin-fee-guide/`} target="_blank" rel="noopener">{tx('feeChip')}</a>
   </div>
+
+  <a class="stuck-banner" href={`https://learn.txid.uk/${learnLangPrefix}/blog/how-to-fix-stuck-bitcoin-transaction/`} target="_blank" rel="noopener">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span data-ko={i18n.stuckBanner.ko} data-en={i18n.stuckBanner.en} data-ja={i18n.stuckBanner.ja}>{tx('stuckBanner')}</span>
+  </a>
 
   <main id="main">
     <div class="hero">
@@ -147,7 +153,7 @@ const learnLangPrefix = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'ko';
     }
 
     // -- i18n --
-    const pageLang = (window as any).__pageLang || 'ko';
+    const pageLang = (window as any).__pageLang || 'en';
     let lang = localStorage.getItem('lang') || pageLang;
     const LABELS: Record<string, Record<string, string>> = {
       ko: { '탐색기': '탐색기', '도구': '도구', '시각화': '시각화', '통계': '통계', '노드': '노드', '지도': '지도', '포트폴리오': '포트폴리오', '전송': '전송', '배우기': '배우기', '앱모음': '앱모음' },
@@ -166,7 +172,7 @@ const learnLangPrefix = lang === 'en' ? 'en' : lang === 'ja' ? 'ja' : 'ko';
       }
       document.documentElement.lang = lang;
       const btn = document.getElementById('lang-btn');
-      if (btn) btn.textContent = ({ ko: 'KO', en: 'EN', ja: 'JA' } as Record<string, string>)[lang] || 'KO';
+      if (btn) btn.textContent = ({ ko: 'KO', en: 'EN', ja: 'JA' } as Record<string, string>)[lang] || 'EN';
       document.getElementById('lang-menu')?.classList.remove('open');
       document.querySelectorAll<HTMLElement>('[data-ko]').forEach(el => {
         const val = el.dataset[lang] || el.dataset.en || el.dataset.ko;

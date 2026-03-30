@@ -1,0 +1,8 @@
+# Cloudflare Pages deployment config
+# This ensures deploy always targets the correct project
+name = "tx-txid-uk"
+pages_build_output_dir = "dist"
+
+[pages]
+project_name = "tx-txid-uk"
+branch = "main"
