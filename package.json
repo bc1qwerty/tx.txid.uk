@@ -16,5 +16,8 @@
     "@astrojs/sitemap": "^3.7.1",
     "@txid/ui": "file:./packages/txid-ui",
     "astro": "^6.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }
