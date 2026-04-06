@@ -67,6 +67,25 @@ const canonicalUrl = `${site}/${lang}/`;
   <a href="#main" class="skip-link">{lang === 'en' ? 'Skip to content' : lang === 'ja' ? '本文へスキップ' : '본문으로 건너뛰기'}</a>
   <slot />
   <script src="https://api.txid.uk/txid-auth.js" crossorigin="anonymous" defer is:inline></script>
+  <script is:inline>
+  document.addEventListener("astro:page-load", function() {
+    if (!document.getElementById("txid-auth-css")) {
+      var link = document.createElement("link");
+      link.id = "txid-auth-css";
+      link.rel = "stylesheet";
+      link.href = "https://api.txid.uk/txid-auth.css";
+      link.crossOrigin = "anonymous";
+      document.head.appendChild(link);
+    }
+    var mount = document.getElementById("txid-auth-mount");
+    if (mount && !mount.hasChildNodes()) {
+      var s = document.createElement("script");
+      s.src = "https://api.txid.uk/txid-auth.js?t=" + Date.now();
+      s.defer = true;
+      document.head.appendChild(s);
+    }
+  });
+  </script>
   <script defer src="https://umami.txid.uk/script.js" data-website-id="3f47c9c7-b9e2-4a2a-9bd2-94a9934d46ad" is:inline></script>
 </body>
 </html>
