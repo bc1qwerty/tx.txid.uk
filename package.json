@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
-    "@txid/ui": "workspace:*",
+    "@txid/ui": "file:./packages/txid-ui",
     "astro": "^6.0.5"
   },
   "devDependencies": {
